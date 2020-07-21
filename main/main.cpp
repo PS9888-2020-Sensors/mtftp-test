@@ -6,6 +6,7 @@
 #include "freertos/queue.h"
 #include "esp_log.h"
 
+#include "mtftp.h"
 #include "mtftp_server.hpp"
 #include "mtftp_client.hpp"
 
@@ -13,6 +14,9 @@
 
 // simulate failure in read function from server
 // #define READ_FAIL
+
+// simulate missing data packet
+// #define DATA_MISSING
 
 uint16_t LEN_TEST_FILE = 1000;
 
@@ -101,6 +105,17 @@ void sendPacketToServer(uint8_t *data, uint8_t len) {
 }
 
 void sendPacketToClient(uint8_t *data, uint8_t len) {
+    #ifdef DATA_MISSING
+        static uint8_t data_sent = 0;
+
+        if (*data == TYPE_DATA) {
+            data_sent++;
+
+            if (data_sent == 2) {
+                return;
+            }
+        }
+    #endif
     sendPacket(DST_CLIENT, data, len);
 }
 
