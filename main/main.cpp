@@ -11,6 +11,9 @@
 
 #include <sdkconfig.h>
 
+// simulate failure in read function from server
+// #define READ_FAIL
+
 uint16_t LEN_TEST_FILE = 1000;
 
 extern "C" {
@@ -34,6 +37,14 @@ typedef struct {
 
 bool readFile(uint16_t file_index, uint32_t file_offset, uint8_t *data, uint16_t btr, uint16_t *br) {
     ESP_LOGD(TAG, "readFile: file_index=%d file_offset=%d btr=%d", file_index, file_offset, btr);
+
+    #ifdef READ_FAIL
+        static uint8_t times_read = 0;
+        times_read ++;
+        if (times_read > 1) {
+            return false;
+        }
+    #endif
 
     if (file_offset > LEN_TEST_FILE) {
         *br = 0;
