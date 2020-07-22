@@ -64,14 +64,14 @@ bool readFile(uint16_t file_index, uint32_t file_offset, uint8_t *data, uint16_t
     return true;
 }
 
-bool writeFile(uint16_t file_index, uint32_t file_offset, uint8_t *data, uint16_t btw) {
+bool writeFile(uint16_t file_index, uint32_t file_offset, const uint8_t *data, uint16_t btw) {
     ESP_LOGD(TAG, "writeFile: file_index=%d file_offset=%d btw=%d", file_index, file_offset, btw);
     ESP_LOG_BUFFER_HEXDUMP(TAG, data, btw, ESP_LOG_DEBUG);
 
     return true;
 }
 
-void sendPacket(enum packet_dst dst, uint8_t *data, uint8_t len) {
+void sendPacket(enum packet_dst dst, const uint8_t *data, uint8_t len) {
     uint8_t *buf = (uint8_t *) malloc(len);
 
     if (buf == NULL) {
@@ -100,11 +100,11 @@ void sendPacket(enum packet_dst dst, uint8_t *data, uint8_t len) {
     free(container);
 }
 
-void sendPacketToServer(uint8_t *data, uint8_t len) {
+void sendPacketToServer(const uint8_t *data, uint8_t len) {
     sendPacket(DST_SERVER, data, len);
 }
 
-void sendPacketToClient(uint8_t *data, uint8_t len) {
+void sendPacketToClient(const uint8_t *data, uint8_t len) {
     #ifdef DATA_MISSING
         static uint8_t data_sent = 0;
 
