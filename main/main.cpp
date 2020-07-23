@@ -18,7 +18,7 @@
 // simulate missing data packet
 // #define DATA_MISSING
 
-uint16_t LEN_TEST_FILE = 1000;
+uint16_t LEN_TEST_FILE = 1024;
 
 extern "C" {
     void app_main();
@@ -119,6 +119,15 @@ void sendPacketToClient(const uint8_t *data, uint8_t len) {
     sendPacket(DST_CLIENT, data, len);
 }
 
+void onServerIdle(void) {
+    ESP_LOGI(TAG, "Server went idle");
+}
+
+void onClientIdle(void) {
+    ESP_LOGI(TAG, "Client went idle");
+}
+
+
 void app_main(void)
 {
     packet_container_t container;
@@ -126,9 +135,11 @@ void app_main(void)
 
     MtftpServer server;
     server.init(&readFile, &sendPacketToClient);
+    server.setOnIdleCb(&onServerIdle);
 
     MtftpClient client;
     client.init(&writeFile, &sendPacketToServer);
+    client.setOnIdleCb(&onClientIdle);
 
     client.beginRead(0, 0);
 
